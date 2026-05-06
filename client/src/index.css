@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Keep base minimal; app styling will live in components/pages */
+html,
+body,
+#root {
+  height: 100%;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply text-slate-900 antialiased;
+  background:
+    radial-gradient(1000px 500px at 0% -10%, rgba(252, 128, 25, 0.22), transparent 60%),
+    radial-gradient(900px 420px at 100% 0%, rgba(255, 176, 67, 0.2), transparent 55%),
+    #f9fafb;
+}
+
+.brand-gradient {
+  background: linear-gradient(135deg, #fc8019 0%, #ff9f43 100%);
+}
+
+.glass-card {
+  @apply border border-orange-100/80 bg-white/85 backdrop-blur;
+}
+
+.admin-input::placeholder {
+  color: #94a3b8;
+}
+
+.admin-input:focus {
+  border-color: #fdba74;
+  box-shadow: 0 0 0 2px rgba(251, 146, 60, 0.18);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
