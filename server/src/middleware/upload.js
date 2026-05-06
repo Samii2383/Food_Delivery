@@ -4,7 +4,13 @@ import { ApiError } from "../utils/apiError.js";
 
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 2 * 1024 * 1024 }
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    if (!file?.mimetype?.startsWith("image/")) {
+      return cb(new ApiError(400, "Only image files are allowed"));
+    }
+    cb(null, true);
+  }
 });
 
 export const uploadSingleImage = upload.single("image");

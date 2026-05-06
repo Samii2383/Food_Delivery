@@ -4,7 +4,10 @@ import { authApi } from "./authApi.js";
 const TOKEN_KEY = "qb_token";
 const USER_KEY = "qb_user";
 
+const SHOULD_PERSIST = import.meta.env.VITE_PERSIST_AUTH !== "false";
+
 function loadPersisted() {
+  if (!SHOULD_PERSIST) return { token: null, user: null };
   try {
     const token = localStorage.getItem(TOKEN_KEY);
     const userRaw = localStorage.getItem(USER_KEY);
@@ -18,6 +21,7 @@ function loadPersisted() {
 }
 
 function persist({ token, user }) {
+  if (!SHOULD_PERSIST) return;
   if (token) localStorage.setItem(TOKEN_KEY, token);
   else localStorage.removeItem(TOKEN_KEY);
 

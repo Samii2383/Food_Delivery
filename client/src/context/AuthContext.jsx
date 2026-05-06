@@ -5,7 +5,10 @@ import { AuthContext } from "./AuthContextObject";
 const TOKEN_KEY = "qb_token";
 const USER_KEY = "qb_user";
 
+const SHOULD_PERSIST = import.meta.env.VITE_PERSIST_AUTH !== "false";
+
 function loadInitialAuth() {
+  if (!SHOULD_PERSIST) return { token: "", user: null };
   const token = localStorage.getItem(TOKEN_KEY);
   const rawUser = localStorage.getItem(USER_KEY);
   try {
@@ -30,8 +33,10 @@ export function AuthProvider({ children }) {
       const res = await authService.login(payload);
       setToken(res.token);
       setUser(res.user);
-      localStorage.setItem(TOKEN_KEY, res.token);
-      localStorage.setItem(USER_KEY, JSON.stringify(res.user));
+      if (SHOULD_PERSIST) {
+        localStorage.setItem(TOKEN_KEY, res.token);
+        localStorage.setItem(USER_KEY, JSON.stringify(res.user));
+      }
       return res;
     } finally {
       setLoading(false);
@@ -44,8 +49,10 @@ export function AuthProvider({ children }) {
       const res = await authService.register(payload);
       setToken(res.token);
       setUser(res.user);
-      localStorage.setItem(TOKEN_KEY, res.token);
-      localStorage.setItem(USER_KEY, JSON.stringify(res.user));
+      if (SHOULD_PERSIST) {
+        localStorage.setItem(TOKEN_KEY, res.token);
+        localStorage.setItem(USER_KEY, JSON.stringify(res.user));
+      }
       return res;
     } finally {
       setLoading(false);

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import multer from "multer";
 import { env } from "../config/env.js";
 import { ApiError } from "../utils/apiError.js";
 import { logger } from "../utils/logger.js";
@@ -41,6 +42,19 @@ function normalizeError(err) {
       statusCode: 400,
       message: `Invalid ${err.path}`,
       details: err.value
+    };
+  }
+
+  if (err instanceof multer.MulterError) {
+    if (err.code === "LIMIT_FILE_SIZE") {
+      return {
+        statusCode: 400,
+        message: "Image too large. Maximum allowed size is 10MB."
+      };
+    }
+    return {
+      statusCode: 400,
+      message: err.message || "File upload error"
     };
   }
 
