@@ -1,22 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { authService } from "../services/authService";
 import { AuthContext } from "./AuthContextObject";
-
-const TOKEN_KEY = "qb_token";
-const USER_KEY = "qb_user";
-
-const SHOULD_PERSIST = import.meta.env.VITE_PERSIST_AUTH !== "false";
+import { authStorage } from "../utils/authStorage.js";
 
 function loadInitialAuth() {
-  if (!SHOULD_PERSIST) return { token: "", user: null };
-  const token = localStorage.getItem(TOKEN_KEY);
-  const rawUser = localStorage.getItem(USER_KEY);
-  try {
-    const user = rawUser ? JSON.parse(rawUser) : null;
-    return { token, user };
-  } catch {
-    return { token, user: null };
-  }
+  const token = authStorage.getToken();
+  const user = authStorage.getUser();
+  return { token, user };
 }
 
 export function AuthProvider({ children }) {
@@ -33,10 +23,8 @@ export function AuthProvider({ children }) {
       const res = await authService.login(payload);
       setToken(res.token);
       setUser(res.user);
-      if (SHOULD_PERSIST) {
-        localStorage.setItem(TOKEN_KEY, res.token);
-        localStorage.setItem(USER_KEY, JSON.stringify(res.user));
-      }
+      authStorage.setToken(res.token);
+      authStorage.setUser(res.user);
       return res;
     } finally {
       setLoading(false);
@@ -49,10 +37,8 @@ export function AuthProvider({ children }) {
       const res = await authService.register(payload);
       setToken(res.token);
       setUser(res.user);
-      if (SHOULD_PERSIST) {
-        localStorage.setItem(TOKEN_KEY, res.token);
-        localStorage.setItem(USER_KEY, JSON.stringify(res.user));
-      }
+      authStorage.setToken(res.token);
+      authStorage.setUser(res.user);
       return res;
     } finally {
       setLoading(false);
@@ -62,8 +48,7 @@ export function AuthProvider({ children }) {
   function logout() {
     setToken("");
     setUser(null);
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
+    authStorage.clear();
   }
 
   useEffect(() => {

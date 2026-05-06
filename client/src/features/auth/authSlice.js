@@ -1,32 +1,14 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { authApi } from "./authApi.js";
-
-const TOKEN_KEY = "qb_token";
-const USER_KEY = "qb_user";
-
-const SHOULD_PERSIST = import.meta.env.VITE_PERSIST_AUTH !== "false";
+import { authStorage } from "../../utils/authStorage.js";
 
 function loadPersisted() {
-  if (!SHOULD_PERSIST) return { token: null, user: null };
-  try {
-    const token = localStorage.getItem(TOKEN_KEY);
-    const userRaw = localStorage.getItem(USER_KEY);
-    return {
-      token: token || null,
-      user: userRaw ? JSON.parse(userRaw) : null
-    };
-  } catch {
-    return { token: null, user: null };
-  }
+  return { token: authStorage.getToken() || null, user: authStorage.getUser() };
 }
 
 function persist({ token, user }) {
-  if (!SHOULD_PERSIST) return;
-  if (token) localStorage.setItem(TOKEN_KEY, token);
-  else localStorage.removeItem(TOKEN_KEY);
-
-  if (user) localStorage.setItem(USER_KEY, JSON.stringify(user));
-  else localStorage.removeItem(USER_KEY);
+  authStorage.setToken(token);
+  authStorage.setUser(user);
 }
 
 export const registerThunk = createAsyncThunk(

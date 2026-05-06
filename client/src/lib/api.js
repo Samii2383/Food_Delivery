@@ -1,8 +1,6 @@
 import axios from "axios";
 import toast from "react-hot-toast";
-
-const TOKEN_KEY = "qb_token";
-const USER_KEY = "qb_user";
+import { authStorage } from "../utils/authStorage.js";
 let hasAuthErrorToast = false;
 
 export const api = axios.create({
@@ -11,7 +9,7 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem(TOKEN_KEY);
+  const token = authStorage.getToken();
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
@@ -23,8 +21,7 @@ api.interceptors.response.use(
     const message = error?.response?.data?.message;
 
     if (status === 401) {
-      localStorage.removeItem(TOKEN_KEY);
-      localStorage.removeItem(USER_KEY);
+      authStorage.clear();
       if (!hasAuthErrorToast) {
         hasAuthErrorToast = true;
         toast.error("Session expired. Please login again.");
